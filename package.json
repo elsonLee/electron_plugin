@@ -24,12 +24,14 @@
     "@electron-toolkit/utils": "^2.0.0",
     "@electron/remote": "^2.1.0",
     "antd": "^5.11.2",
+    "electron-log": "^5.0.0",
     "electron-updater": "^6.1.1",
     "fix-path": "^4.0.0",
     "got": "^13.0.0",
-    "npm": "^10.2.4",
+    "npm": "6.14.7",
     "pouchdb": "^8.0.1",
-    "pouchdb-load": "^1.4.5"
+    "pouchdb-load": "^1.4.5",
+    "pouchdb-replication-stream": "^1.2.9"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",

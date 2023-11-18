@@ -4,6 +4,8 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import API from "./common/api";
+
 //function createWindow(): void {
 //  // Create the browser window.
 //  const mainWindow = new BrowserWindow({
@@ -93,7 +95,10 @@ const WinCreator = () => {
       ...(process.platform === 'linux' ? { icon } : {}),
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),
-        sandbox: false
+        sandbox: false,
+        //
+        contextIsolation: false,
+        nodeIntegration: true,
       }
     });
 
@@ -150,6 +155,8 @@ class App {
   onReady() {
     const readyFunction = async () => {
       this.createWindow();
+      // register ipcMain.on
+      API(this.windowCreator.getWindow());
     };
 
     if (!app.isReady()) {

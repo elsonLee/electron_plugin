@@ -16,7 +16,8 @@ const data = [
   },
 ];
 
-import createPluginManager from './plugins-manager'
+//import createPluginManager from './plugins-manager'
+//const pluginMgr = createPluginManager();
 //const {
 //  initPlugins,
 //  getPluginInfo,
@@ -24,7 +25,6 @@ import createPluginManager from './plugins-manager'
 //  currentPlugin,
 //  pluginLoading
 //} = createPluginManager();
-//const pluginMgr = createPluginManager();
 
 function App() {
   return <div className="App">

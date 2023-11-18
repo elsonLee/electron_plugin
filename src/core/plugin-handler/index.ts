@@ -2,18 +2,18 @@
 //    AdapterHandlerOptions,
 //    AdapterInfo,
 //} from '@/core/plugin-handler/types';
-import { AdapterHandlerOptions, AdapterInfo } from './types';
+import { AdapterHandlerOptions, AdapterInfo } from '../plugin-handler/types';
 import fs from 'fs-extra';
 import path from 'path';
 //import got from 'got'
-import fixPath from 'fix-path';
+//import fixPath from 'fix-path';
 
 import { ipcRenderer } from 'electron';
 //import axios from 'axios';
 
-import npm from 'npm';
+//import npm from 'npm';
 
-fixPath();
+//fixPath();
 
 /**
  * 系统插件管理器
