@@ -22,14 +22,21 @@
   "dependencies": {
     "@electron-toolkit/preload": "^2.0.0",
     "@electron-toolkit/utils": "^2.0.0",
+    "@electron/remote": "^2.1.0",
     "antd": "^5.11.2",
-    "electron-updater": "^6.1.1"
+    "electron-updater": "^6.1.1",
+    "fix-path": "^4.0.0",
+    "got": "^13.0.0",
+    "npm": "^10.2.4",
+    "pouchdb": "^8.0.1",
+    "pouchdb-load": "^1.4.5"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "^1.0.1",
     "@electron-toolkit/eslint-config-ts": "^1.0.0",
     "@electron-toolkit/tsconfig": "^1.0.1",
-    "@types/node": "^18.17.5",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@types/node": "^18.18.9",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.4",
@@ -42,6 +49,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.1.6",
-    "vite": "^4.4.9"
+    "vite": "^4.4.9",
+    "vite-plugin-electron": "^0.15.4",
+    "vite-plugin-optimizer": "^1.4.2"
   }
 }
