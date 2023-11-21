@@ -6,6 +6,8 @@ import icon from '../../resources/icon.png?asset'
 
 import API from "./common/api";
 
+require('@electron/remote/main').initialize();
+
 //function createWindow(): void {
 //  // Create the browser window.
 //  const mainWindow = new BrowserWindow({
@@ -78,6 +80,7 @@ const WinCreator = () => {
 
   const init = () => {
     createWindow();
+    require('@electron/remote/main').enable(win.webContents);
 //  app.on('activate', function () {
 //    // On macOS it's common to re-create a window in the app when the
 //    // dock icon is clicked and there are no other windows open.

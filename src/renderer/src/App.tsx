@@ -1,51 +1,39 @@
 import { Button } from "antd"
-import { Avatar, List } from 'antd'
+import PluginList from "./plugin-list";
 
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-];
-
-//import createPluginManager from './plugins-manager'
-//const pluginMgr = createPluginManager();
-//const {
-//  initPlugins,
-//  getPluginInfo,
-//  openPlugin,
-//  currentPlugin,
-//  pluginLoading
-//} = createPluginManager();
+import createPluginManager from './plugins-manager'
+const pluginMgr = createPluginManager();
+pluginMgr.initPlugins();
 
 function App() {
-  return <div className="App">
-    <h1>Electron-Vite-React-App</h1>
-    <Button type="primary">Load Plugin</Button>
 
-    <List
-      itemLayout="horizontal"
-      dataSource={data}
-      renderItem={(item, index) => (
-        <List.Item>
-          <List.Item.Meta
-            avatar={<Avatar src={`https://xsgames.co/randomusers/avatar.php?g=pixel&key=${index}`} />}
-            title={<a href="https://ant.design">{item.title}</a>}
-            description="Ant Design, a design language for background applications, is refined by Ant UED Team"
-          />
-        </List.Item>
-      )}
-    />
+  const installedPlugins: PluginListProps = {
+    title: "Installed Plugins",
+    list: [
+      {
+        title: 'Ant Design Title 1',
+      },
+      {
+        title: 'Ant Design Title 2',
+      },
+      {
+        title: 'Ant Design Title 3',
+      },
+      {
+        title: 'Ant Design Title 4',
+      },
+    ]
+  };
 
-  </div>
+  return (
+    <div className="App">
+      <h1>Electron-Vite-React-App</h1>
+      <Button type="primary">Load Plugin</Button>
+      <PluginList
+        {...installedPlugins}
+      />
+    </div>
+  );
 }
 
 export default App

@@ -3,9 +3,9 @@ import { PluginHandler } from '../../../core'
 import log from 'electron-log/renderer'
 
 const createPluginManager = (): any => {
-    //const pluginInstance = new PluginHandler({
-    //    baseDir,
-    //});
+    const pluginInstance = new PluginHandler({
+        baseDir,
+    });
 
     const initPlugins = async () => {
         console.log("baseDir" + baseDir.toString());
