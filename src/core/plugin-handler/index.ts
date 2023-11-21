@@ -11,9 +11,14 @@ import path from 'path';
 import { ipcRenderer } from 'electron';
 //import axios from 'axios';
 
-const fs = require('@electron/remote').require('fs-extra');
+// FIXME: shouldn't in browser process
+const fs = process.type == "browser"?
+            require('fs-extra') : require('@electron/remote').require('fs-extra');
 
 //import npm from 'npm';
+const npm = process.type == "browser"?
+            require('npm') :
+            require('@electron/remote').require('npm');
 
 //fixPath();
 
