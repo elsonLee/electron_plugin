@@ -159,7 +159,7 @@ class App {
     const readyFunction = async () => {
       this.createWindow();
       // register ipcMain.on
-      API(this.windowCreator.getWindow());
+      API.init(this.windowCreator.getWindow());
     };
 
     if (!app.isReady()) {

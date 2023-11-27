@@ -8,6 +8,8 @@
     // added
     "src/common/**/*",
     "src/core/**/*",
+    // added
+    "src/main/common/**/*",
   ],
   "compilerOptions": {
     "composite": true,

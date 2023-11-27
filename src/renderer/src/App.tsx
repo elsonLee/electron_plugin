@@ -2,6 +2,7 @@ import { Button } from "antd"
 import PluginList from "./plugin-list";
 
 import createPluginManager from './plugins-manager'
+import { getGlobal } from "@electron/remote";
 const pluginMgr = createPluginManager();
 pluginMgr.initPlugins();
 
@@ -25,10 +26,24 @@ function App() {
     ]
   };
 
+  //const localPlugins = getGlobal("LOCAL_PLUGINS").getLocalPlugins();
+
+  const handleBrowsePlugins = (e) => {
+    const dialog = require("@electron/remote").dialog;
+    dialog.showOpenDialog({ properties: ['openFile', 'openDirectory']})
+      .then(result => {
+        console.log(result.canceled);
+        console.log(result.filePaths);
+      })
+      .catch (err => {
+        console.log(err);
+      })
+  }
+
   return (
     <div className="App">
       <h1>Electron-Vite-React-App</h1>
-      <Button type="primary">Load Plugin</Button>
+      <Button type="primary" onClick={handleBrowsePlugins}>Browse Plugins</Button>
       <PluginList
         {...installedPlugins}
       />
