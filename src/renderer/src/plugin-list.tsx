@@ -1,7 +1,8 @@
 import { Avatar, List } from "antd";
 import React from "react"
+import { useSelector, useDispatch } from "react-redux";
 
-const PluginList = ({title, list}: PluginListProps) => {
+const PluginList = ({ title, list }: PluginListProps) => {
     return (
         <div className="panel-item">
             <h3 className="title">{title}</h3>
