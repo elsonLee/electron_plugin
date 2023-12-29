@@ -4,9 +4,15 @@ import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import '../common/utils/localPlugins';
+
 import API from "./common/api";
+import localConfig from './common/initLocalConfig';
+import registerSystemPlugin from './common/registerSystemPlugin';
 
 require('@electron/remote/main').initialize();
+
+global.testVar = 1234;
 
 //function createWindow(): void {
 //  // Create the browser window.
@@ -79,7 +85,7 @@ const WinCreator = () => {
   let win: any;
 
   const init = () => {
-    createWindow();
+    createBrowerWindow();
     require('@electron/remote/main').enable(win.webContents);
 //  app.on('activate', function () {
 //    // On macOS it's common to re-create a window in the app when the
@@ -88,7 +94,7 @@ const WinCreator = () => {
 //  })
   }
 
-  const createWindow = async () => {
+  const createBrowerWindow = async () => {
     // Create the browser window.
     win = new BrowserWindow({
       width: 900,
@@ -138,6 +144,7 @@ const WinCreator = () => {
 class App {
 
   public windowCreator: { init: () => void; getWindow: () => BrowserWindow };
+  private systemPlugins: any;
 
   constructor() {
     this.windowCreator = WinCreator()
@@ -145,6 +152,7 @@ class App {
     if (!gotTheLock) {
         app.quit();
     } else {
+      this.systemPlugins = registerSystemPlugin();
       this.onReady();
       this.onRunning();
       this.onQuit();
@@ -156,10 +164,19 @@ class App {
   }
 
   onReady() {
+    console.log('onReady called');
+
     const readyFunction = async () => {
+      console.log('readyFunction called');
+
+      // init localConfig & global
+      await localConfig.init();
+
+      console.log('global.version: ', global.version);
+
       this.createWindow();
       // register ipcMain.on
-      API(this.windowCreator.getWindow());
+      API.init(this.windowCreator.getWindow());
     };
 
     if (!app.isReady()) {
