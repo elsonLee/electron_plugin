@@ -5,7 +5,8 @@ import createPluginManager from './plugins-manager'
 import { useSelector, useDispatch } from "react-redux";
 import { decrement, increment } from "./store/counterSlice";
 import { RootState } from './store'
-import { initPlugins } from "./store/pluginSlice";
+
+import { refreshInstalledPlugins } from "./store/pluginSlice";
 
 const remote = require("@electron/remote");
 
@@ -16,53 +17,49 @@ function App() {
 
   const installedPlugins: PluginListProps = {
     title: "Installed Plugins",
-    list: [
-      {
-        title: 'Ant Design Title 1',
-      },
-      {
-        title: 'Ant Design Title 2',
-      },
-      {
-        title: 'Ant Design Title 3',
-      },
-      {
-        title: 'Ant Design Title 4',
-      },
-    ]
+    list: []
   };
 
-  const handleBrowsePlugins = (e) => {
-    console.log("global.testVar: ", remote.getGlobal('testVar'));
-    const localPlugins = remote.getGlobal('LOCAL_PLUGINS').getLocalPlugins();
-    console.log("logcalPlugins: ", localPlugins);
+  const count = useSelector((state: RootState) => state.counter.value);
+  const localPlugins = useSelector((state: RootState) => {
+    const plugins = state.plugins.localPlugins;
+    return plugins.map((plugin, index) => {
+      return Object.assign({}, { 'title': plugin.name });
+    });
+  });
+  const dispatch = useDispatch();
 
+  const handleInstallLocalPlugin = () => {
     const dialog = require("@electron/remote").dialog;
-    dialog.showOpenDialog({ properties: ['openFile', 'openDirectory'] })
+    // TODO: 'multiSelections'
+    dialog.showOpenDialog(
+      {
+        properties: ['openFile'],
+        filters: [
+          { name: 'package', extensions: ['tgz']}
+        ]
+      }
+      )
       .then(result => {
         console.log(result.canceled);
         console.log(result.filePaths);
+        remote.getGlobal('LOCAL_PLUGINS').downloadPlugin({
+          name: result.filePaths[0],
+          isDev: false
+        });
+        dispatch(refreshInstalledPlugins());
       })
       .catch(err => {
         console.log(err);
       })
   }
 
-  const count = useSelector((state: RootState) => state.counter.value)
-  const localPlugins = useSelector((state: RootState) => {
-    const plugins = state.plugins.localPlugins;
-    console.log("plugins: ", plugins);
-    return plugins.map((plugin, index) => {
-      return Object.assign({}, {'title': plugin.name});
-    });
-  });
-  const dispatch = useDispatch();
-
   return (
     <div className="App">
-      <Button type="primary">Load Plugin</Button>
-      <PluginList
-        {
+      <Button type="primary"
+              onClick={() => handleInstallLocalPlugin()}
+            >Install Local Plugin</Button>
+      <PluginList {
           ...installedPlugins
         }
         list={localPlugins}
@@ -70,7 +67,7 @@ function App() {
       <div>
         <Button
           type="primary"
-          onClick={() => dispatch(initPlugins(""))}
+          onClick={() => dispatch(increment())}
           >Increment</Button>
         <span>{count}</span>
         <Button

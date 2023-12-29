@@ -6,6 +6,7 @@ export default (): string => {
     if (!localDataFile) {
         localDataFile = process.env.LOCALAPPDATA;
     }
+    console.log("localDataFile:", localDataFile)
     const rubickPath = path.join(localDataFile, 'rubick');
     if (!fs.existsSync(rubickPath)) {
         fs.mkdirSync(rubickPath);

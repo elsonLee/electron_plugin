@@ -31,7 +31,6 @@ import DBInstance from "./db";
 class API extends DBInstance {
   init (mainWindow: BrowserWindow)
   {
-    // 响应 preload.js 事件
     ipcMain.on('msg-trigger', async (event, arg) => {
       const window = arg.winId ? BrowserWindow.fromId(arg.winId) : mainWindow;
       const data = await this[arg.type](arg, window, event);

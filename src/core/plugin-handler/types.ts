@@ -2,10 +2,8 @@
  * 插件管理器配置
  * @param baseDir 插件安装目录
  * @param registry 插件下载源 即 npm 源
- * @export
- * @interface AdapterHandlerOptions
  */
-export interface AdapterHandlerOptions {
+export interface PluginHandlerOptions {
   baseDir: string;
   registry?: string;
 }
@@ -35,4 +33,4 @@ export interface AdapterInfo {
 }
 
 // 插件运行状态
-export type AdapterStatus = "RUNNING" | "STOPED" | "ERROR";
+export type PluginStatus = "RUNNING" | "STOPED" | "ERROR";

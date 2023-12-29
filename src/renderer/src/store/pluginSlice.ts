@@ -2,7 +2,6 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export const pluginSlice = createSlice({
     name: 'plugins',
-    //initialState,
     initialState: {
         totalPlugins: [] as any[],
         localPlugins: [] as any[],
@@ -19,7 +18,7 @@ export const pluginSlice = createSlice({
             state.searchValue = payload;
         },
 
-        initPlugins(state: any, commit) {
+        refreshInstalledPlugins(state: any) {
             const remote = require("@electron/remote");
             const localPlugins = remote.getGlobal('LOCAL_PLUGINS').getLocalPlugins();
             return {
@@ -31,7 +30,7 @@ export const pluginSlice = createSlice({
 });
 
 // 为每个 case reducer 函数生成 Action creators
-export const { initPlugins } = pluginSlice.actions;
+export const { refreshInstalledPlugins } = pluginSlice.actions;
 
 // selectors 等其他代码可以使用导入的 `RootState` 类型
 //export const selectCount = (state: RootState) => state.counter.value;

@@ -1,8 +1,8 @@
 //import {
-//    AdapterHandlerOptions,
+//    PluginHandlerOptions,
 //    AdapterInfo,
 //} from '@/core/plugin-handler/types';
-import { AdapterHandlerOptions, AdapterInfo } from '../plugin-handler/types';
+import { PluginHandlerOptions, AdapterInfo } from '../plugin-handler/types';
 //import fs from 'fs-extra';
 import path from 'path';
 //import got from 'got'
@@ -25,9 +25,9 @@ import spawn from "cross-spawn";
 
 /**
  * 系统插件管理器
- * @class AdapterHandler
+ * @class PluginHandler
  */
-class AdapterHandler {
+class PluginHandler {
     // 插件安装地址
     public baseDir: string;
     // 插件源地址
@@ -36,11 +36,11 @@ class AdapterHandler {
     pluginCaches = {};
 
     /**
-     * Creates an instance of AdapterHandler.
-     * @param {AdapterHandlerOptions} options
-     * @memberof AdapterHandler
+     * Creates an instance of PluginHandler.
+     * @param {PluginHandlerOptions} options
+     * @memberof PluginHandler
      */
-    constructor(options: AdapterHandlerOptions) {
+    constructor(options: PluginHandlerOptions) {
         // 初始化插件存放
         if (!fs.existsSync(options.baseDir)) {
             fs.mkdirsSync(options.baseDir);
@@ -51,13 +51,13 @@ class AdapterHandler {
         }
         this.baseDir = options.baseDir;
 
-        //let register = options.registry || 'https://registry.npmmirror.com/';
-        let register = options.registry || '';
+        // TODO: npm register
+        let register = options.registry || 'https://registry.npmmirror.com/';
 
         try {
             const dbdata = ipcRenderer.sendSync('msg-trigger', {
                 type: 'dbGet',
-                data: { id: 'rubick-localhost-config' },
+                data: { id: 'weblog-localhost-config' },
             });
             register = dbdata.data.register;
         } catch (e) {
@@ -145,7 +145,7 @@ class AdapterHandler {
 
     /**
      * 列出所有已安装插件
-     * @memberof AdapterHandler
+     * @memberof PluginHandler
      */
     async list() {
         const installInfo = JSON.parse(
@@ -174,7 +174,9 @@ class AdapterHandler {
                 args = args.concat(`--registry=${this.registry}`);
             }
 
-            // TODO: install into dir plugins
+            console.log("npm ", cmd, " ", args);
+
+            // install into dir plugins
             const npm = spawn("npm", args, { cwd: this.baseDir, });
 
             let output = "";
@@ -196,6 +198,6 @@ class AdapterHandler {
         });
     }
 
-} // AdapterHandler
+} // PluginHandler
 
-export default AdapterHandler;
+export default PluginHandler;
