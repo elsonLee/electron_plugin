@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import PouchDB from 'pouchdb';
 import { DBError, Doc, DocRes } from './types';
+import { ExecException } from 'child_process';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const replicationStream = require('pouchdb-replication-stream/dist/pouchdb.replication-stream.min.js');
@@ -223,7 +224,8 @@ export default class DB {
       result.id = this.replaceDocId(name, result.id);
       return result;
     } catch (e) {
-      return this.errorInfo(e.name, e.message);
+      //return this.errorInfo(e.name, e.message);
+      return null;
     }
   }
 

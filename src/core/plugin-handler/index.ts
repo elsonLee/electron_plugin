@@ -16,9 +16,10 @@ const fs = process.type == "browser"?
             require('fs-extra') : require('@electron/remote').require('fs-extra');
 
 //import npm from 'npm';
-const npm = process.type == "browser"?
-            require('npm') :
-            require('@electron/remote').require('npm');
+//const npm = process.type == "browser"?
+//            require('npm') :
+//            require('@electron/remote').require('npm');
+import spawn from "cross-spawn";
 
 //fixPath();
 
@@ -128,32 +129,18 @@ class AdapterHandler {
         return adapterInfo;
     }
 
-    // 安装并启动插件
     async install(adapters: Array<string>, options: { isDev: boolean }) {
-        const installCmd = options.isDev ? 'link' : 'install';
-        // 安装
-        await this.execCommand(installCmd, adapters);
+        const cmd = options.isDev ? 'link' : 'install';
+        await this.execNpmCmd(cmd, adapters);
     }
 
-    /**
-     * 更新指定插件
-     * @param {...string[]} adapters 插件名称
-     * @memberof AdapterHandler
-     */
     async update(...adapters: string[]) {
-        await this.execCommand('update', adapters);
+        await this.execNpmCmd('update', adapters);
     }
 
-    /**
-     * 卸载指定插件
-     * @param {...string[]} adapters 插件名称
-     * @param options
-     * @memberof AdapterHandler
-     */
     async uninstall(adapters: string[], options: { isDev: boolean }) {
-        const installCmd = options.isDev ? 'unlink' : 'uninstall';
-        // 卸载插件
-        await this.execCommand(installCmd, adapters);
+        const cmd = options.isDev? 'unlink' : 'uninstall';
+        await this.execNpmCmd(cmd, adapters);
     }
 
     /**
@@ -172,74 +159,43 @@ class AdapterHandler {
     }
 
     /**
-     * 运行包管理器
-     * @memberof AdapterHandler
+     * npm operations
+     * cmd:
+     *  prod: "install"|"uninstall"|"update"
+     *  TODO: dev:  "link"|"unlink"
      */
-    private async execCommand(cmd: string, modules: string[]): Promise<string> {
+    private async execNpmCmd(cmd: string, modules: string[]): Promise<string> {
         return new Promise((resolve: any, reject: any) => {
-            const module =
-                cmd !== 'uninstall' && cmd !== 'link'
-                    ? modules.map((m) => `${m}@latest`)
-                    : modules;
-            const config: any = {
-                prefix: this.baseDir,
-                save: true,
-                cache: path.join(this.baseDir, 'cache'),
-            };
-            if (cmd !== 'link') {
-                config.registry = this.registry;
+            let args: string[] =
+                [cmd].concat(modules)
+                     .concat("--color=always")
+                     .concat("--save");
+            if (cmd != "uninstall") {
+                args = args.concat(`--registry=${this.registry}`);
             }
-            npm.load(config, function (err) {
-                npm.commands[cmd](module, function (er, data) {
-                    if (!err) {
-                        console.log(data);
-                        resolve({ code: -1, data });
-                    } else {
-                        reject({ code: -1, data: err });
-                    }
-                });
 
-                npm.on('log', function (message) {
-                    // log installation progress
-                    console.log(message);
-                });
+            // TODO: install into dir plugins
+            const npm = spawn("npm", args, { cwd: this.baseDir, });
+
+            let output = "";
+            npm.stdout.on("data", (data: string) => {
+                output += data;
+            }).pipe(process.stdout);
+
+            npm.stderr.on("data", (data: string) => {
+                output += data;
+            }).pipe(process.stderr);
+
+            npm.on("close", (code: number) => {
+                if (code == 0) {
+                    resolve({code: 0, data: output});
+                } else {
+                    reject({code: code, data: output});
+                }
             });
-
-            // if (cmd !== 'link') {
-            //   args = args
-            //     .concat('--color=always')
-            //     .concat('--save')
-            //     .concat(`--registry=${this.registry}`);
-            // }
-
-            // const npm = spawn('npm', args, {
-            //   cwd: this.baseDir,
-            // });
-            //
-            // console.log(args);
-            //
-            // let output = '';
-            // npm.stdout
-            //   .on('data', (data: string) => {
-            //     output += data; // 获取输出日志
-            //   })
-            //   .pipe(process.stdout);
-            //
-            // npm.stderr
-            //   .on('data', (data: string) => {
-            //     output += data; // 获取报错日志
-            //   })
-            //   .pipe(process.stderr);
-            //
-            // npm.on('close', (code: number) => {
-            //   if (!code) {
-            //     resolve({ code: 0, data: output }); // 如果没有报错就输出正常日志
-            //   } else {
-            //     reject({ code: code, data: output }); // 如果报错就输出报错日志
-            //   }
-            // });
         });
     }
-}
+
+} // AdapterHandler
 
 export default AdapterHandler;
