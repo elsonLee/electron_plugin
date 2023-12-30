@@ -1,8 +1,18 @@
-import { Avatar, List } from "antd";
-import React from "react"
-import { useSelector, useDispatch } from "react-redux";
+import { Avatar, List, Button } from "antd";
+import { useDispatch } from "react-redux";
+import { refreshInstalledPlugins } from "./store/pluginSlice";
+
+const remote = require("@electron/remote");
 
 const PluginList = ({ title, list }: PluginListProps) => {
+
+    const dispatch = useDispatch();
+
+    const handlePluginUninstall = async (plugin) => {
+        await remote.getGlobal('LOCAL_PLUGINS').deletePlugin(plugin);
+        dispatch(refreshInstalledPlugins());
+    }
+
     return (
         <div className="panel-item">
             <h3 className="title">{title}</h3>
@@ -17,6 +27,8 @@ const PluginList = ({ title, list }: PluginListProps) => {
                                 title={<a href="https://ant.design">{item.title}</a>}
                                 description="Ant Design, a design language for background applications, is refined by Ant UED Team"
                             />
+                            <Button type="primary"
+                                    onClick={() => handlePluginUninstall({name: `${item.title}`})}>uninstall</Button>
                         </List.Item>
                     )}
                 />

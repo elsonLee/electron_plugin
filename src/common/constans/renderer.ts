@@ -1,4 +1,3 @@
-import remote from '@electron/remote'
 import path from 'path';
 
 const app = require('@electron/remote').app;

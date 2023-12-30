@@ -23,27 +23,27 @@ function App() {
   const count = useSelector((state: RootState) => state.counter.value);
   const localPlugins = useSelector((state: RootState) => {
     const plugins = state.plugins.localPlugins;
-    return plugins.map((plugin, index) => {
+    const pluginList = plugins.map((plugin, index) => {
       return Object.assign({}, { 'title': plugin.name });
     });
+    console.log("load to list: ", pluginList)
+    return pluginList;
   });
   const dispatch = useDispatch();
 
-  const handleInstallLocalPlugin = () => {
+  const handleLocalPluginInstall = async () => {
     const dialog = require("@electron/remote").dialog;
     // TODO: 'multiSelections'
-    dialog.showOpenDialog(
-      {
+    dialog.showOpenDialog({
         properties: ['openFile'],
         filters: [
           { name: 'package', extensions: ['tgz']}
         ]
-      }
-      )
-      .then(result => {
+      })
+      .then(async (result) => {
         console.log(result.canceled);
         console.log(result.filePaths);
-        remote.getGlobal('LOCAL_PLUGINS').downloadPlugin({
+        await remote.getGlobal('LOCAL_PLUGINS').installPlugin({
           name: result.filePaths[0],
           isDev: false
         });
@@ -57,11 +57,10 @@ function App() {
   return (
     <div className="App">
       <Button type="primary"
-              onClick={() => handleInstallLocalPlugin()}
+              onClick={() => handleLocalPluginInstall()}
             >Install Local Plugin</Button>
-      <PluginList {
-          ...installedPlugins
-        }
+      <PluginList
+        title="Installed Plugins"
         list={localPlugins}
       />
       <div>

@@ -35,7 +35,7 @@ let pluginInstance;
     }
 })();
 
-function getPackageNameFromTgz(tgzFilePath: string): Promise<string | null> {
+async function getPackageNameFromTgz(tgzFilePath: string): Promise<string | null> {
   return new Promise((resolve, reject) => {
     const tempDir = './temp';
     if (!fs.existsSync(tempDir)) {
@@ -71,26 +71,30 @@ function getPackageNameFromTgz(tgzFilePath: string): Promise<string | null> {
 global.LOCAL_PLUGINS = {
     PLUGINS: [],
 
-    async downloadPlugin(plugin) {
+    async installPlugin(plugin) {
         
-        console.log("type plugin.name: ", typeof plugin.name);
-
         // FIXME: plugin.name may be a name or tgz path or dir path
         await pluginInstance.install([plugin.name], { isDev: plugin.isDev });
         console.log("Plugin installed: ", plugin.name)
 
         const pluginFile: string = plugin.name;
         if (pluginFile.endsWith('.tgz')) {
-            getPackageNameFromTgz(pluginFile)
+            await getPackageNameFromTgz(pluginFile)
                 .then((packageName) => {
                     console.log('Package Name:', packageName);
-                    plugin.name = packageName;
+                    plugin = {
+                        ...plugin,
+                        name: packageName,  // NOTE: plugin name will use package.json version
+                    };
+                    console.log("plugin1: ", plugin);
                 })
                 .catch((error) => {
                     console.error('Error getting package name from tgz:', error);
                     return global.LOCAL_PLUGINS.PLUGINS;
                 });
         }
+
+        console.log("plugin2: ", plugin);
 
         if (plugin.isDev) {
             // 获取 dev 插件信息
@@ -107,6 +111,7 @@ global.LOCAL_PLUGINS = {
                 ...pluginInfo,  // NOTE: plugin name will use package.json version
             };
         }
+
         global.LOCAL_PLUGINS.addPlugin(plugin);
         return global.LOCAL_PLUGINS.PLUGINS;
     },
@@ -146,11 +151,12 @@ global.LOCAL_PLUGINS = {
                     fs.readFileSync(configPath, 'utf-8')
                 );
             }
-            return global.LOCAL_PLUGINS.PLUGINS;
         } catch (e) {
             global.LOCAL_PLUGINS.PLUGINS = [];
-            return global.LOCAL_PLUGINS.PLUGINS;
         }
+        console.log("getLocalPlugins: ", global.LOCAL_PLUGINS.PLUGINS);
+
+        return global.LOCAL_PLUGINS.PLUGINS;
     },
 
     addPlugin(plugin) {
@@ -163,6 +169,7 @@ global.LOCAL_PLUGINS = {
         if (!has) {
             currentPlugins.unshift(plugin);
             global.LOCAL_PLUGINS.PLUGINS = currentPlugins;
+            console.log("after addPlugin: ", global.LOCAL_PLUGINS.PLUGINS);
             fs.writeFileSync(configPath, JSON.stringify(currentPlugins));
         }
     },
@@ -185,6 +192,7 @@ global.LOCAL_PLUGINS = {
             (p) => plugin.name !== p.name
         );
         fs.writeFileSync(configPath, JSON.stringify(global.LOCAL_PLUGINS.PLUGINS));
+        console.log("after deletePlugin: ", global.LOCAL_PLUGINS.PLUGINS);
         return global.LOCAL_PLUGINS.PLUGINS;
     },
 };
